@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>ResiBridge Tech App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+
+  <body>
+    <header>
+      <div class="container">
+        <div class="logo">ResiBridge Tech App</div>
+        <nav>
+          <ul>
+            <li>
+              <a href="/">TechApp</a>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropbtn">Customers</a>
+              <div class="dropdown-content">
+                <a href="/customers">Customers</a>
+                <a href="/customers_active">Customers Active</a>
+              </div>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropbtn">Blank Id</a>
+              <div class="dropdown-content">
+                <a href="/blank_id">BlankIDs</a>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <h1>Onboarding</h1>
+      <!-- Add Customer Form -->
+      <form action="/add_customer" method="post" class="form-container">
+        <h2>Add New Customer</h2>
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" required>
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone:</label>
+          <input type="tel" id="phone" name="phone" required>
+          <label for="login">Login:</label>
+          <input type="text" id="login" name="login" required>
+        </div>
+        <p><label for="status">Status:</label>
+          <select id="status" name="status">
+            <option value="active">Active</option>
+            <option value="disabled">Disabled</option>
+            <option value="new" selected>New</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </p>
+        <input type="submit" value="Add Customer">
+      </form>
+      </p>
+      
+      <!-- Script to split the name into First & Last for Portal Creation -->
+      <script>
+        function createPortal(event) {
+          event.preventDefault(); // Prevent form submission
+          const fullNameInput = document.getElementById('name');
+          const DOBInput = document.getElementById('DOB');
+          const fullName = fullNameInput.value.trim();
+          const DOB = DOBInput.value.trim();
+          const [fname, lname] = fullName.split(' ');
+          const portalInput = document.getElementById('password');
+          portalInput.value = `${fname.charAt(0)}${lname}${DOB}`;
+          // Submit the form
+          event.target.submit();
+        }
+      </script>
+    </main>
+    <footer>
+      <p>&copy; 2023 ResiBridge</p>
+    </footer>
+  </body>
+
+</html>
