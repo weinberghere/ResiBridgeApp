@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 import requests
 from time import time
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -32,11 +36,14 @@ def get_tokens():
 
 
 # Make request to get new tokens
-# Need to figure out how to hide these - store as environmental variables?
+type = os.getenv("TYPE")
+key = os.getenv("KEY")
+secret = os.getenv("SECRET")
+
 response = requests.post(token_url, json={
-    "auth_type": "admin",
-    "login": "Jonathan",
-    "password": "2mint503!"
+    "auth_type": type,
+    "login": key,
+    "password": secret
 })
 
 # Parse response for tokens
