@@ -22,12 +22,6 @@
                 <a href="/customers_active">Customers Active</a>
               </div>
             </li>
-            <li class="dropdown">
-              <a href="#" class="dropbtn">Blank Id</a>
-              <div class="dropdown-content">
-                <a href="/blank_id">BlankIDs</a>
-              </div>
-            </li>
           </ul>
         </nav>
       </div>
@@ -46,6 +40,7 @@
             <th>Login</th>
             <th>Email</th>
             <th>Phone</th>
+            <th>Location</th>
           </tr>
         </thead>
         <tbody> {% for customer in customers %} {% if customer.status == 'active' %} <tr>
@@ -54,6 +49,13 @@
             <td>{{ customer.login }}</td>
             <td>{{ customer.email }}</td>
             <td>{{ customer.phone }}</td>
+            {% if customer.location_id == '1' %}
+            <td>Park79</td>
+            {% elif customer.location_id == '2' %}
+            <td>Cambridge</td>
+            {% else %}
+            <td></td>
+            {% endif %}
           </tr> {% endif %} {% endfor %} </tbody>
       </table>
     </main>

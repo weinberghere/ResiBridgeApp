@@ -37,12 +37,6 @@
                 <a href="/customers_active">Customers Active</a>
               </div>
             </li>
-            <li class="dropdown">
-              <a href="#" class="dropbtn">Blank Id</a>
-              <div class="dropdown-content">
-                <a href="/blank_id">BlankIDs</a>
-              </div>
-            </li>
           </ul>
         </nav>
       </div>
@@ -57,32 +51,8 @@
         <input type="submit" value="Refresh Token">
       </form>
       {% endif %}
-
-      <!-- Add Customer Form -->
-      <form action="/add_customer" method="post" class="form-container">
-        <h2>Add New Customer</h2>
-        <div class="form-group">
-          <label for="name">Name:</label>
-          <input type="text" id="name" name="name" required>
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required>
-        </div>
-        <div class="form-group">
-          <label for="phone">Phone:</label>
-          <input type="tel" id="phone" name="phone" required>
-          <label for="login">Login:</label>
-          <input type="text" id="login" name="login" required>
-        </div>
-        <p><label for="status">Status:</label>
-          <select id="status" name="status">
-            <option value="active">Active</option>
-            <option value="disabled">Disabled</option>
-            <option value="new" selected>New</option>
-            <option value="blocked">Blocked</option>
-          </select>
-        </p>
-        <input type="submit" value="Add Customer">
-      </form>
+      
+      <!-- List Customers -->
       <table>
         <thead>
           <tr>
@@ -91,6 +61,10 @@
             <th>Login</th>
             <th>Email</th>
             <th>Phone</th>
+            <th>Location</th>
+            <th>Street</th>
+            <th>ZIP</th>
+            <th>City</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -103,10 +77,20 @@
             <td>{{ customer.login }}</td>
             <td>{{ customer.email }}</td>
             <td>{{ customer.phone }}</td>
+              {% if customer.location_id == '1' %}
+            <td>Park79</td>
+            {% elif customer.location_id == '2' %}
+            <td>Cambridge</td>
+            {% else %}
+            <td></td>
+            {% endif %}
+            <td>{{ customer.street_1 }}</td>
+            <td>{{ customer.zip_code }}</td>
+            <td>{{ customer.city }}</td>
             <td>{{ customer.status }}</td>
             <td>
               <button type="button" class="edit-button"
-                onclick="editCustomer('{{ customer.id }}', '{{ customer.name }}', '{{ customer.login }}', '{{ customer.email }}', '{{ customer.phone }}', '{{ customer.status }}')">Edit</button>
+                onclick="editCustomer('{{ customer.id }}', '{{ customer.name }}', '{{ customer.login }}', '{{ customer.email }}', '{{ customer.phone }}', '{{ customer.location }}', '{{ customer.status }}')">Edit</button>
               <button onclick="confirmDelete('{{ customer.id }}', '{{ customer.name }}')">Remove</button>
 
               <!-- Edit Customer Form -->

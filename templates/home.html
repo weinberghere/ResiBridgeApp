@@ -22,12 +22,6 @@
                 <a href="/customers_active">Customers Active</a>
               </div>
             </li>
-            <li class="dropdown">
-              <a href="#" class="dropbtn">Blank Id</a>
-              <div class="dropdown-content">
-                <a href="/blank_id">BlankIDs</a>
-              </div>
-            </li>
           </ul>
         </nav>
       </div>
@@ -56,6 +50,21 @@
             <option value="new" selected>New</option>
             <option value="blocked">Blocked</option>
           </select>
+          <label for="location">Location:</label>
+          <select id="location" name="location">
+            <option value="1" selected>Park79</option>
+            <option value="2">Cambridge</option>
+          </select>
+        </p>
+        <div class="form-group">
+          <label for="street">Street:</label>
+          <input type="text" id="street" name="street" required>
+        </div>
+        <p>
+          <label for="zip">ZIP:</label>
+          <input type="text" id="zip" name="zip" required style="width: 50px;" required>
+          <label for="city">City:</label>
+          <input type="text" id="city" name="city" required>
         </p>
         <input type="submit" value="Add Customer">
       </form>

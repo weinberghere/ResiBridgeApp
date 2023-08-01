@@ -7,7 +7,6 @@ app = Flask(__name__)
 # API URLs
 base_url = "https://resibridge.splynx.app/api/2.0"
 customer_url = f"{base_url}/admin/customers/customer"
-blank_id_url = f"{base_url}/your_api_endpoint"
 token_url = f"{base_url}/admin/auth/tokens"
 refresh_url = f"{base_url}/admin/auth/tokens/refresh"
 
@@ -105,31 +104,6 @@ def customers_active():
     active_customers = [customer for customer in customers if customer['status'] == 'active']
     return render_template('customers_active.html', customers=active_customers, token_status='active')
 
-# Function to fetch the blank IDs from the API
-def get_blank_ids():
-    check_token_status()
-    response = requests.get(blank_id_url, headers=build_headers())
-    if response.status_code == 200:
-        data = response.json()
-        blank_ids = [id for id in data if not data[id]]
-        return blank_ids
-    else:
-        # Handle error cases
-        print("Error: Failed to fetch blank IDs")
-        return []
-
-# Update the blank_id route
-@app.route('/blank_id')
-def blank_id():
-    # Call the get_blank_ids function to fetch the blank IDs
-    blank_ids = get_blank_ids()
-
-    # Print the retrieved blank IDs
-    print("Retrieved Blank IDs:", blank_ids)
-
-    # Pass the blank IDs to the template for rendering
-    return render_template('blank_id.html', blank_ids=blank_ids)
-
 # Add customer
 @app.route('/add_customer', methods=['POST'])
 def add_customer():
@@ -139,14 +113,23 @@ def add_customer():
     phone = request.form['phone']
     status = request.form['status']
     login = request.form['login']
+    location = request.form['location']
+    street = request.form['street']
+    zip = request.form['zip']
+    city = request.form['city']
     new_customer = {
         'name': name,
         'email': email,
         'phone': phone,
         'status': status,
-        'login': login
+        'login': login,
+        'location_id': location,
+        'street_1': street,
+        'zip_code': zip,
+        'city': city
     }
     response = requests.post(customer_url, json=new_customer, headers=build_headers())
+    print(response.status_code)
     if response.status_code == 201:
         return redirect(url_for('customers'))
     else:
