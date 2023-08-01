@@ -3,6 +3,7 @@
 
   <head>
     <title>ResiBridge Tech App - Customers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
       /* Dropdown menu styles */
@@ -22,7 +23,6 @@
       }
     </style>
   </head>
-
   <body>
     <header>
       <div class="container">
@@ -51,7 +51,7 @@
         <input type="submit" value="Refresh Token">
       </form>
       {% endif %}
-      
+
       <!-- List Customers -->
       <table>
         <thead>
@@ -77,7 +77,7 @@
             <td>{{ customer.login }}</td>
             <td>{{ customer.email }}</td>
             <td>{{ customer.phone }}</td>
-              {% if customer.location_id == '1' %}
+            {% if customer.location_id == '1' %}
             <td>Park79</td>
             {% elif customer.location_id == '2' %}
             <td>Cambridge</td>
@@ -91,7 +91,7 @@
             <td>
               <button type="button" class="edit-button"
                 onclick="editCustomer('{{ customer.id }}', '{{ customer.name }}', '{{ customer.login }}', '{{ customer.email }}', '{{ customer.phone }}', '{{ customer.location }}', '{{ customer.status }}')">Edit</button>
-              <button onclick="confirmDelete('{{ customer.id }}', '{{ customer.name }}')">Remove</button>
+              <button class="edit-button" onclick="confirmDelete('{{ customer.id }}', '{{ customer.name }}')">Remove</button>
 
               <!-- Edit Customer Form -->
               <form id="editForm{{ customer.id }}" action="/edit_customer" method="post" class="edit-form-container"
@@ -112,13 +112,14 @@
                 </p>
                 <p><label for="status">Status:</label></p>
                 <p><select id="editStatus" name="editStatus">
-                  <option value="active">Active</option>
-                  <option value="disabled">Disabled</option>
-                  <option value="new" selected>New</option>
-                  <option value="blocked">Blocked</option>
-                </select></p>
+                    <option value="active">Active</option>
+                    <option value="disabled">Disabled</option>
+                    <option value="new" selected>New</option>
+                    <option value="blocked">Blocked</option>
+                  </select></p>
                 <h1><input type="submit" value="Save">
-                <button type="button" onclick="cancelEdit('{{ customer.id }}')">Cancel</button></h1>
+                  <button type="button" onclick="cancelEdit('{{ customer.id }}')">Cancel</button>
+                </h1>
               </form>
             </td>
           </tr>
@@ -151,7 +152,7 @@
       }
 
       function confirmDelete(customerId, name) {
-        if (confirm("Are you sure you want to delete " + name + " ?")) {
+        if (confirm("Are you sure you want to delete " + name + "?")) {
           fetch(`/delete_customer/${customerId}`, { method: 'POST' })
             .then(response => {
               if (response.ok) {
