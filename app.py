@@ -30,7 +30,9 @@ def get_tokens():
     global refresh_token
     global refresh_token_expiration
 
+
 # Make request to get new tokens
+# Need to figure out how to hide these - store as environmental variables?
 response = requests.post(token_url, json={
     "auth_type": "admin",
     "login": "Jonathan",
@@ -101,7 +103,8 @@ def customers_active():
     check_token_status()
     response = requests.get(customer_url, headers=build_headers())
     customers = response.json()
-    active_customers = [customer for customer in customers if customer['status'] == 'active']
+    active_customers = [
+        customer for customer in customers if customer['status'] == 'active']
     return render_template('customers_active.html', customers=active_customers, token_status='active')
 
 # Add customer
@@ -128,7 +131,8 @@ def add_customer():
         'zip_code': zip,
         'city': city
     }
-    response = requests.post(customer_url, json=new_customer, headers=build_headers())
+    response = requests.post(
+        customer_url, json=new_customer, headers=build_headers())
     print(response.status_code)
     if response.status_code == 201:
         return redirect(url_for('customers'))
@@ -151,9 +155,10 @@ def edit_customer():
         updated_customer['phone'] = request.form['editPhone']
     if request.form.get('editStatus'):
         updated_customer['status'] = request.form['editStatus']
-    
+
     update_url = f"{customer_url}/{customer_id}"
-    response = requests.put(update_url, json=updated_customer, headers=build_headers())
+    response = requests.put(
+        update_url, json=updated_customer, headers=build_headers())
     print(response.status_code)
     print(response.headers)
     print(response.content)
@@ -172,7 +177,7 @@ def delete_customer(customer_id):
         return redirect(url_for('customers'))
     else:
         return "Error: Failed to delete customer"
-    
+
 # Refresh token
 @app.route('/refresh', methods=['POST'])
 def refresh():
@@ -180,4 +185,4 @@ def refresh():
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(host='192.168.111.147', port=80) ##debug=True)
+    app.run(host='192.168.111.147', port=80)  # debug=True)

@@ -34,10 +34,15 @@
           <input type="text" id="name" name="name" required>
           <label for="email">Email:</label>
           <input type="email" id="email" name="email" required>
-        </div>
+        </div>  
         <div class="form-group-2">
           <label for="phone">Phone:</label>
           <input type="tel" id="phone" name="phone" required oninput="formatPhoneNumber(this)">
+<!--  Need to make changes to label
+      Instead of having label be an input, change to Unit#
+      We can use the Unit# and Location to create and enter the Login automatically
+      Format for Input should be LocationUnit# ie "Park79unit3b"
+        -->          
           <label for="login">Login:</label>
           <input type="text" id="login" name="login" required>
         </div>
@@ -86,13 +91,12 @@
 //          portalInput.value = `${fname.charAt(0)}${lname}${DOB}`;
 //          Submit the form
 //          event.target.submit();
-
+//        }
           function formatPhoneNumber(input) {
             const phoneNumber = input.value.replace(/\D/g, '');
             const formattedNumber = phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
             input.value = formattedNumber;
           }
-     //   }
       </script>
     </main>
     <footer>
