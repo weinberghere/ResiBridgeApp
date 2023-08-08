@@ -1,12 +1,14 @@
 /* Color palette */
 :root {
-  --primary-color: #20a8ac;
-  /* Primary color - Teal */
-  --secondary-color: #e64646;
-  /* Secondary color - Red */
+  --primary-color: #20a8ac; /* Primary color - Teal */
+  --secondary-color: #e64646; /* Secondary color - Red */
 }
 
 /* Global styles */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -14,6 +16,7 @@ body {
   font-size: 16px;
   background-color: #f5f5f5;
   color: #333;
+  overflow-x: hidden;
 }
 
 a {
@@ -103,165 +106,6 @@ header nav a:hover {
   background-color: #007d82;
 }
 
-/* Buttons in the header */
-header nav li:not(.dropdown) {
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-}
-
-/* Status buttons */
-.active {
-  background-color: var(--primary-color);
-  color: #fff;
-  padding: 10px 20px;
-  cursor: pointer;
-  border: none;
-  font-size: 16px;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
-
-.inactive {
-  background-color: var(--secondary-color);
-  color: #fff;
-  padding: 10px 20px;
-  cursor: pointer;
-  border: none;
-  font-size: 16px;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
-
-.active:hover {
-  background-color: var(--secondary-color);
-}
-
-.inactive:hover {
-  background-color: var(--primary-color);
-}
-
-/* Alternate row colors for the table */
-table tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-table tr:nth-child(odd) {
-  background-color: #eaeaea;
-}
-
-/* CSS for the pop-up window */
-.edit-form {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  color: #333;
-  font-family: "Roboto", Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  padding: 20px;
-  width: 100%;
-}
-
-/* New CSS class for the form container */
-.edit-form-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--primary-color);
-  padding: 40px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #fff;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  max-width: 600px;
-}
-
-.edit-form-container p {
-  margin-bottom: 5;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
-}
-
-.edit-form-container input[type="submit"],
-.edit-form-container button {
-  margin: auto;
-  width: 50%;
-}
-
-.hidden {
-  display: none;
-}
-
-.edit-form table {
-  width: 100%;
-}
-
-.edit-form table td {
-  padding: 10px;
-}
-
-.edit-form label {
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.edit-form input[type="email"],
-.edit-form input[type="tel"],
-.edit-form input[type="text"],
-.edit-form select {
-  /*border: 1px solid #ccc;
-  border-radius: 3px;
-  padding: 10px;
-  width: 100%; */
-  margin: 0 auto;
-}
-
-.edit-form .buttons {
-  margin-top: 20px;
-  text-align: right;
-}
-
-.edit-form button,
-.edit-form input[type="submit"] {
-  background-color: var(--primary-color);
-  border: none;
-  border-radius: 3px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 10px 20px;
-  transition: background-color 0.3s ease;
-}
-
-.edit-form button:hover,
-.edit-form input[type="submit"]:hover {
-  background-color: #007d82;
-}
-
-/* Additional styles for the pop-up window */
-.edit-form .buttons button {
-  background-color: var(--secondary-color);
-  margin-right: 10px;
-}
-
-.edit-form .buttons button:last-child {
-  margin-right: 0;
-}
-
-.edit-form .buttons button:hover {
-  background-color: #d13a3a;
-}
-
 /* Main content styles */
 main {
   margin-top: 80px;
@@ -270,73 +114,6 @@ main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  left: 0;
-  right: 0;
-}
-
-/* Add Customer Form */
-/* Center the form elements */
-.form-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 10px;
-  background-color: var(--primary-color);
-  padding: 20px;
-  margin: 10px;
-}
-
-.form-group {
-  width: 100%;
-  max-width: 300px;
-  /* Adjust this width as needed */
-  margin-bottom: 5px;
-}
-
-.form-group-2 {
-  height: 100%;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  color: white;
-}
-
-/* Additional style to center the form elements */
-.edit-form-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 400px;
-  /* Adjust this width as needed */
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-}
-
-.form-group-2 label {
-  display: block;
-  margin-bottom: 5px;
-  margin-left: 10px;
-}
-
-.form-group-2 input,
-.form-group-2 select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  margin-left: 10px;
 }
 
 h1 {
@@ -348,128 +125,83 @@ h1 {
   padding: 20px;
   text-align: center;
   width: 100%;
-  left: 0;
-  right: 0;
 }
 
-table {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  width: 100%;
-  overflow-x: auto;
-  border-collapse: collapse;
+/* Additional Widget Container Style */
+.widget-container {
+  max-width: 100%; /* You can set this to a specific width if needed */
 }
 
-table th,
-table td {
-  padding: 10px;
-  border: 1px solid #ccc;
-  text-align: center;
-  border: 1px solid black;
+/* Splynx Widget Iframe Style */
+.splynx-widget {
+  height: 600px; /* Adjust height as needed */
+  border: none; /* Remove the border if desired */
+  border-radius: 10px;
 }
 
-/* Media query for smaller screens */
-@media screen and (max-width: 700px) {
-  table {
-    width: 100%;
-    overflow-x: auto;
-    text-align: center;
-    left: 0;
-    right: 0;
-
-  }
-  
-  table th,
-  table td {
-    font-size: 8px;
-    padding: 1px;
-    /*white-space: nowrap;*/
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-wrap: break-word;
-  }
-
-  .edit-button {
-    font-size: 8px;
-  }
-
-  table td:nth-child(1),
-  table td:nth-child(3),
-  table td:nth-child(4),
-  table td:nth-child(6),
-  table td:nth-child(8),
-  table th:nth-child(1),
-  table th:nth-child(3),
-  table th:nth-child(4),
-  table th:nth-child(6),
-  table th:nth-child(8) {
-    display: none;
-  }
-
-  header {
+/* Add Customer Form */
+.form-container {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 10px;
   background-color: var(--primary-color);
-  color: #fff;
-  top: 0;
-  left: 0;
-  right: 0;
-  }
-
-  header .container {
-    align-items: center;
-  }
-
-  header .logo {
-    font-size: 10px;
-    font-weight: bold;
-  }
-
-  header nav {
-    align-items: center;
-  }
-
-  header nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    height: 100%;
-  }
-
-  header nav li {
-    position: relative;
-  }
-
-  header nav a {
-    color: #fff;
-    display: block;
-    font-size: 10px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-  }
-
-  header nav a:hover {
-    background-color: #007d82;
-  }
-
-  header nav li:not(.dropdown) {
-    align-items: left;
-  }
-}
-
-table th {
-  background-color: var(--primary-color);
-  color: #fff;
-  font-weight: bold;
-  text-align: center;
-}
-
-/* Center the form elements */
-.form-container:before {
-  content: "";
-  flex: 1 1 auto;
+  margin: auto;
 }
 
 .form-group {
-  flex: 0 0 auto;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.form-group-2,
+.form-group-3,
+.form-group-4,
+.form-group-5,
+.edit-form-group-4 {
+  display: grid;
+  gap: 30px;
+}
+
+.form-group-2 {
+  grid-template-columns: 0.50fr 0.50fr;
+}
+
+.form-group-3 {
+  grid-template-columns: 0.50fr 0.25fr 0.25fr;
+}
+
+.form-group-4 {
+  grid-template-columns: 0.50fr 0.10fr 0.20fr 0.20fr;
+}
+
+.form-group-5 {
+  grid-template-columns: 0.40fr 0.15fr 0.15fr 0.10fr 0.20fr;
+}
+
+.edit-form-group-4 {
+  grid-template-columns: 0.50fr 0.15fr 0.15fr 0.15fr;
+}
+
+form {
+  width: 90%;
+  padding: 10px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  color: white;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
 }
 
 /* Footer styles */
@@ -486,4 +218,149 @@ footer {
 footer p {
   margin: 0;
   text-align: left;
+}
+
+/* Centering the edit form */
+.edit-form-wrapper {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.edit-form-container input[type="submit"],
+.edit-form-container button {
+  margin-top: 10px;
+  color: white;
+  background-color: var(--secondary-color);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  width: 50%;
+}
+
+.edit-form-wrapper.show {
+  display: flex;
+}
+
+.edit-form-container {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: var(--primary-color);
+  margin: auto;
+}
+
+.edit-form-button {
+  margin-top: 10px;
+  color: white;
+  background-color: var(--secondary-color);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Style to make the table responsive
+.table-responsive {
+  overflow-x: auto;
+}*/
+
+/* Table styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table th,
+.table td {
+  padding: 10px; /* Reduce padding */
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  overflow: hidden;
+  word-wrap: break-word; /* Allow text to wrap */
+  font-size: 14px; /* Reduce font size if needed */
+}
+
+.table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table tr:hover {
+  background-color: #dad1d1;
+}
+
+@media screen and (min-width: 1250px) and (max-width: 1500px) {
+  .table th,
+  .table td {
+    padding: 8px; /* Further reduce padding */
+    font-size: 12px; /* Further reduce font size if needed */
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1249px) {
+  .table th,
+  .table td {
+    padding: 4px; /* Further reduce padding */
+    font-size: 8px; /* Further reduce font size if needed */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .form-group {
+    grid-template-columns: 1fr;
+  }
+
+  .table th,
+  .table td {
+    padding: 4px; /* Further reduce padding */
+    font-size: 8px;
+  }
+
+  .hide-on-mobile {
+    display: none; /* Hide specific table headers and data cells */
+  }
+
+  .edit-form-container {
+    padding: 10px;
+  }
+
+  /*.table-responsive {
+    overflow-x: auto;
+  }*/
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  .table tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  .edit-button,
+  .remove-button {
+    width: 80%; /* Full width for buttons */
+    margin: 5px 5px; /* Add some vertical spacing */
+    font-size: 6px;
+    padding: 3px;
+  }
 }

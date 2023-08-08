@@ -3,6 +3,7 @@ import requests
 from time import time
 from dotenv import load_dotenv
 import os
+import json
 
 load_dotenv()
 
@@ -33,7 +34,6 @@ def get_tokens():
     global access_token_expiration
     global refresh_token
     global refresh_token_expiration
-
 
 # Make request to get new tokens
 type = os.getenv("TYPE")
@@ -114,37 +114,60 @@ def customers_active():
         customer for customer in customers if customer['status'] == 'active']
     return render_template('customers_active.html', customers=active_customers, token_status='active')
 
-# Add customer
-@app.route('/add_customer', methods=['POST'])
+@app.route('/add_customer', methods=['GET', 'POST'])
 def add_customer():
     check_token_status()
-    name = request.form['name']
-    email = request.form['email']
-    phone = request.form['phone']
-    status = request.form['status']
-    login = request.form['login']
-    location = request.form['location']
-    street = request.form['street']
-    zip = request.form['zip']
-    city = request.form['city']
-    new_customer = {
-        'name': name,
-        'email': email,
-        'phone': phone,
-        'status': status,
-        'login': login,
-        'location_id': location,
-        'street_1': street,
-        'zip_code': zip,
-        'city': city
-    }
-    response = requests.post(
-        customer_url, json=new_customer, headers=build_headers())
-    print(response.status_code)
-    if response.status_code == 201:
-        return redirect(url_for('customers'))
-    else:
-        return "Error: Failed to add customer"
+
+    # Fetch regular tariffs
+    regular_tariffs = requests.get(regular_tariff_url, headers=build_headers())
+    
+    # Fetch ACP tariffs (bundles)
+    acp_tariffs = requests.get(acp_tariff_url, headers=build_headers())
+
+    if request.method == 'POST':
+        # Location mapping
+        location_mapping = {
+            '1': 'Park79',
+            '2': 'Cambridge',
+            # Add more mappings here if needed
+        }
+
+        name = request.form['name']
+        email = request.form['email']
+        phone = request.form['phone']
+        status = request.form['status']
+        location_id = request.form['location']
+        location_name = location_mapping.get(location_id, 'Unknown') # Look up the location name
+        unit_number = request.form['unit_number']
+        street = request.form['street']
+        zip = request.form['zip']
+        city = request.form['city']
+        login = f"{location_name}unit{unit_number}"  # Use the location name
+
+        new_customer = {
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'status': status,
+            'login': login,
+            'location_id': location_id, # Still using the numeric location ID here
+            'street_1': street,
+            'zip_code': zip,
+            'city': city
+        }
+
+        response = requests.post(
+            customer_url, json=new_customer, headers=build_headers())
+        print(response.status_code)
+
+        if response.status_code == 201:
+            return redirect(url_for('customers'))
+        else:
+            print("Response Content:", response.content)
+            return "Error: Failed to add customer"
+
+    # Render the form if it's a GET request or if the POST request fails
+    return render_template('home.html', regular_tariffs=regular_tariffs, acp_tariffs=acp_tariffs)
 
 # Edit customer
 @app.route('/edit_customer', methods=['POST'])
@@ -154,12 +177,18 @@ def edit_customer():
 
     if request.form.get('editName'):
         updated_customer['name'] = request.form['editName']
-    if request.form.get('editLogin'):
-        updated_customer['login'] = request.form['editLogin']
+    if request.form.get('editStreet'):
+        updated_customer['street'] = request.form['editStreet']
     if request.form.get('editEmail'):
         updated_customer['email'] = request.form['editEmail']
     if request.form.get('editPhone'):
         updated_customer['phone'] = request.form['editPhone']
+    if request.form.get('editZip'):
+        updated_customer['zip'] = request.form['editZip']
+    if request.form.get('editLocation'):
+        updated_customer['location'] = request.form['editLocation']
+    if request.form.get('editCity'):
+        updated_customer['city'] = request.form['editCity']
     if request.form.get('editStatus'):
         updated_customer['status'] = request.form['editStatus']
 
@@ -184,6 +213,18 @@ def delete_customer(customer_id):
         return redirect(url_for('customers'))
     else:
         return "Error: Failed to delete customer"
+
+# Customer attributes
+@app.route('/customer_attributes/<int:customer_id>')
+def customer_attributes(customer_id):
+    check_token_status()
+    customer_attributes_url = f"{customer_url}/{customer_id}"
+    response = requests.get(customer_url, headers=build_headers())
+    if response.status_code == 200:
+        customer_attributes = response.json()
+        return json.dumps(customer_attributes)
+    else:
+        return "Error: Failed to fetch customer attributes"
 
 # Refresh token
 @app.route('/refresh', methods=['POST'])
