@@ -44,73 +44,60 @@
       </div>
     </header>
     <main>
-      <h1>Onboarding</h1>
+      <h1>Banking</h1>
       <!-- Add Customer Form -->
       <div class="form-container">
-        <form method="POST" action="{{ url_for('add_customer') }}">
+        <form method="POST" action="{{ url_for('banking') }}">
+          <input type="hidden" name="customer_id" value="{{ customer_id }}">
+          <h2>Credit Card</h2>
+          <div class="form-group form-group-2" id="cc-form">
+            <div class="input-container">
+              <label for="field_1">Card Number</label>
+              <input type="text" id="field_1" name="field_1" placeholder="345345345345">
+            </div>
+            <div class="input-container">
+              <label for="field_2">Cardholder Name</label>
+              <input type="text" id="field_2" name="field_2" placeholder="Jon Doe">
+            </div>
+          </div>
           <div class="form-group form-group-2">
             <div class="input-container">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" required placeholder="Jon Doe">
+              <label for="field_3">Card Last 4</label>
+              <input type="text" id="field_3" name="field_3" placeholder="5443">
             </div>
             <div class="input-container">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required placeholder="Jon.Doe@ResiBridge.com">
+              <label for="field_4">Expiration Date</label>
+              <input type="text" id="field_4" name="field_4" placeholder="04-2024">
             </div>
           </div>
-          <div class="form-group form-group-4">
+          <h2>Bank Account</h2>
+          <div class="form-group form-group-2" id="bank-form">
             <div class="input-container">
-              <label for="street">Street</label>
-              <input type="text" id="street" name="street" required placeholder="117 W 79th St">
+              <label for="field_6">Account Number</label>
+              <input type="text" id="field_6" name="field_6" placeholder="674847623498745">
             </div>
             <div class="input-container">
-              <label for="unit_number">Unit</label>
-              <input type="text" id="unit_number" name="unit_number" placeholder="2b">
-            </div>
-            <div class="input-container">
-              <label for="zip">ZIP</label>
-              <input id="zip" name="zip" placeholder="10024" required pattern="\d{5}" type="text" />
-            </div>
-            <div class="input-container">
-              <label for="city">City</label>
-              <input type="text" id="city" name="city" required placeholder="New York">
+              <label for="field_7">Routing Number</label>
+              <input type="text" id="field_7" name="field_7" placeholder="4568974538976">
             </div>
           </div>
-          <div class="form-group form-group-3">
+          <div class="form-group form-group-2">
             <div class="input-container">
-              <label for="phone">Phone</label>
-              <input type="text" id="phone" name="phone" required placeholder="(555) 555-5555">
+              <label for="field_8">Name on Account</label>
+              <input type="text" id="field_8" name="field_8" placeholder="Jon Doe">
             </div>
             <div class="input-container">
-              <label for="status">Status</label>
-              <select id="status" name="status">
-                <option value="active">Active</option>
-                <option value="disabled">Disabled</option>
-                <option value="new" selected>New</option>
-                <option value="blocked">Blocked</option>
-              </select>
-            </div>
-            <div class="input-container">
-              <label for="location">Location</label>
-              <select id="location" name="location">
-                <option value="1" selected>Park79</option>
-                <option value="2">Cambridge</option>
-              </select>
+              <label for="field_9">Account Type</label>
+              <input type="text" id="field_9" name="field_9" placeholder="checking">
             </div>
           </div>
+          <input type="hidden" name="_method" value="PUT">
+          <input type="hidden" name="customer_id" value="{{ customer_id }}">
           <div class="form-container">
-            <input class="edit-form-button" type="submit" value="Add Customer">
+            <input class="edit-form-button" type="submit" value="Add Banking">
           </div>
         </form>
       </div>
-      <script>
-        // Format Phone Number
-        function formatPhoneNumber(input) {
-            const phone = input.value.replace(/\D/g, '');
-            const formattedNumber = phone.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
-            input.value = formattedNumber;
-          }
-      </script>
     </main>
     <footer>
       <p>&copy; 2023 ResiBridge</p>

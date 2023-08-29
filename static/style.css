@@ -127,6 +127,17 @@ h1 {
   width: 100%;
 }
 
+h2 {
+  background-color: var(--primary-color);
+  color: #fff;
+  font-size: 30px;
+  font-weight: bold;
+  margin-top: 0;
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+}
+
 /* Additional Widget Container Style */
 .widget-container {
   max-width: 100%; /* You can set this to a specific width if needed */

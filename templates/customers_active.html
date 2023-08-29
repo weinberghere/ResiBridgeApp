@@ -61,7 +61,7 @@
               <th>ID</th>
               <th>Name</th>
               <th class="hide-on-mobile">Login</th>
-              <th class="hide-on-mobile">Email</th>
+              <th>Email</th>
               <th>Phone</th>
               <th class="hide-on-mobile">Location</th>
             </tr>
@@ -73,7 +73,7 @@
               <td>{{ customer.id }}</td>
               <td>{{ customer.name }}</td>
               <td class="hide-on-mobile">{{ customer.login }}</td>
-              <td class="hide-on-mobile">{{ customer.email }}</td>
+              <td>{{ customer.email }}</td>
               <td>{{ customer.phone }}</td>
               {% if customer.location_id == '1' %}
               <td class="hide-on-mobile">Park79</td>
@@ -93,17 +93,20 @@
       <p>&copy; 2023 ResiBridge</p>
     </footer>
     <script>
-  function showCustomerAttributes(customerId) {
-    fetch(`/customer_attributes/${customerId}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        alert(JSON.stringify(data));
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  }
-</script>
-
+      function showCustomerAttributes(customerId) {
+        fetch(`/customer_attributes/${customerId}`)
+          .then(response => response.json())
+          .then(data => {
+            let customer = data.find(c => c.id === customerId);
+            let attributes = '';
+            for (const [variable, value] of Object.entries(customer)) {
+              attributes += `${variable}: ${value}\n`;
+            }
+            alert(attributes);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        }
+    </script>
 </html>
