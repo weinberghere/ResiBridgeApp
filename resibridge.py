@@ -1,46 +1,74 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import hashlib
 import hmac
+import base64
+import os
 import requests
-from flask import session
 from dotenv import load_dotenv
 import secrets
+from datetime import datetime, timedelta
 
 load_dotenv()
 app = Flask(__name__)
-
-# Secret Key
-app.secret_key = secrets.token_hex(16)
+app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY")
 
 # API URLs
-base_url = "https://crm.resibridge.com/api/2.0"
-customer_url = f"{base_url}/admin/customers/customer"
-payment_url = f"{base_url}/admin/customers/customer-payment-accounts"
+splynx_base_url = "https://crm.resibridge.com/api/2.0"
+splynx_customer_url = f"{splynx_base_url}/admin/customers/customer"
+splynx_payment_url = f"{splynx_base_url}/admin/customers/customer-payment-accounts"
+splynx_token_url = f"{splynx_base_url}/admin/auth/tokens"
 
-# Defining Header
+# Defining Splynx Header
 def generate_auth_header():
-    KEY = 'bd793c726617bee375996ccbb1c8d092'
-    SECRET = '9d4124dedfd3cb7ce75aecc70f432d7e'
+    splynx_api_key = os.getenv("SPLYNX_KEY")
+    splynx_api_secret = os.getenv("SPLYNX_SECRET")
     nonce = request.cookies.get('nonce')
     if not nonce:
         nonce = '0'
     else:
         nonce = str(int(nonce) + 1)
-    str_to_hash = nonce + KEY
-    hash_signature = hmac.new(SECRET.encode(), str_to_hash.encode(), hashlib.sha256).hexdigest().upper()
-    auth_header = f'Splynx-EA (key={KEY}&nonce={nonce}&signature={hash_signature})'
+    str_to_hash = nonce + splynx_api_key
+    hash_signature = hmac.new(splynx_api_secret.encode(), str_to_hash.encode(), hashlib.sha256).hexdigest().upper()
+    auth_header = f'Splynx-EA (key={splynx_api_key}&nonce={nonce}&signature={hash_signature})'
     return auth_header
 
 # Home page
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('login.html')
+
+# Login page
+@app.route('/login', methods=['POST'])
+def login():
+    auth_header = generate_auth_header()
+    print("Inside login route")
+    username = request.form['username']
+    password = request.form['password']
+
+    # Make API call to get the token
+    if request.method == 'POST':
+        print("Received POST request to login")
+        response = requests.post(splynx_token_url, headers={'Authorization':auth_header}, json={
+            'auth_type': 'admin',
+            'login': username,
+            'password': password
+        })
+        print(f"Response Status Code: {response.status_code}")
+        print(f"Response Content: {response.content}")
+        if response.status_code == 201:
+            token_data = response.json()
+            access_token = token_data['access_token']
+            return redirect('/add_customer')
+        else:
+            return 'Login failed'
+    else:
+        return render_template('login.html')
 
 # Customers page
 @app.route('/customers')
 def customers():
     auth_header = generate_auth_header()
-    response = requests.get(customer_url, headers={'Authorization':auth_header})
+    response = requests.get(splynx_customer_url, headers={'Authorization':auth_header})
     customers = response.json()
     return render_template('customers.html', customers=customers, token_status='active')
 
@@ -50,7 +78,7 @@ def customers_active():
     auth_header = generate_auth_header()
 
     # Call the check_token_status() function before making the API request
-    response = requests.get(customer_url, headers={'Authorization':auth_header})
+    response = requests.get(splynx_customer_url, headers={'Authorization':auth_header})
     customers = response.json()
     active_customers = [customer for customer in customers if customer['status'] == 'active']
     return render_template('customers_active.html', customers=active_customers, token_status='active')
@@ -58,10 +86,11 @@ def customers_active():
 # Add customer
 @app.route('/add_customer', methods=['GET', 'POST'])
 def add_customer():
+    global customer_id
     auth_header = generate_auth_header()
-    print("Inside add_customer route")  # New Debug Statement
+    print("Inside add_customer route")
     if request.method == 'POST':
-        print("Received POST request to add customer")  # New Debug Statement
+        print("Received POST request to add customer")
 
         # Location mapping
         location_mapping = {
@@ -75,12 +104,12 @@ def add_customer():
         phone = request.form['phone']
         status = request.form['status']
         location_id = request.form['location']
-        location_name = location_mapping.get(location_id, 'Unknown')  # Look up the location name
+        location_name = location_mapping.get(location_id, 'Unknown')
         unit_number = request.form['unit_number']
         street = request.form['street']
         zip = request.form['zip']
         city = request.form['city']
-        login = f"{location_name}unit{unit_number}"  # Use the location name
+        login = f"{location_name}unit{unit_number}"
 
         new_customer = {
             'name': name,
@@ -88,13 +117,13 @@ def add_customer():
             'phone': phone,
             'status': status,
             'login': login,
-            'location_id': location_id,  # Still using the numeric location ID here
+            'location_id': location_id,
             'street_1': street,
             'zip_code': zip,
             'city': city
         }
 
-        response = requests.post(customer_url, json=new_customer, headers={'Authorization':auth_header})
+        response = requests.post(splynx_customer_url, json=new_customer, headers={'Authorization':auth_header})
 
         # Print the response status code and full response content
         print(f"Response Status Code: {response.status_code}")
@@ -137,7 +166,7 @@ def edit_customer():
         updated_customer['city'] = request.form['editCity']
     if request.form.get('editStatus'):
         updated_customer['status'] = request.form['editStatus']
-    update_url = f"{customer_url}/{customer_id}"
+    update_url = f"{splynx_customer_url}/{customer_id}"
     response = requests.put(update_url, json=updated_customer, headers={'Authorization': auth_header})
     print(response.status_code)
     print(response.headers)
@@ -151,7 +180,7 @@ def edit_customer():
 @app.route('/delete_customer/<int:customer_id>', methods=['POST'])
 def delete_customer(customer_id):
     auth_header = generate_auth_header()
-    delete_url = f"{customer_url}/{customer_id}"
+    delete_url = f"{splynx_customer_url}/{customer_id}"
     response = requests.delete(delete_url, headers={'Authorization': auth_header})
     if response.status_code == 204:
         return redirect(url_for('customers'))
@@ -178,7 +207,7 @@ def banking():
         accountType = request.form['field_9']
 
         # Make API call to add credit card information
-        response = requests.put(payment_url + f"?id={customer_id}--1", json={
+        response = requests.put(splynx_payment_url + f"?id={customer_id}--1", json={
             'field_1': cardNumber,
             'field_2': cardholderName,
             'field_3': cardLast4,
@@ -201,4 +230,4 @@ def banking():
         return render_template('banking.html')
 
 if __name__ == '__main__':
-    app.run(host='192.168.111.147', port=80, debug=True)
+    app.run(host='127.0.0.1', port=80, debug=True)

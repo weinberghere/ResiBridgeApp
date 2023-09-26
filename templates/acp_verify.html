@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<link rel="icon"
+      type="image/ico"
+      href="static/resibridge.ico">
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>ResiBridge Tech App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">ResiBridge Tech App</div>
+            <nav>
+                <ul>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">Customers</a>
+                    <div class="dropdown-content">
+                        <a href="/add_customer">Add Customers</a>
+                        <a href="/customers">All Customers</a>
+                        <a href="/customers_active">Active Customers</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">ACP</a>
+                    <div class="dropdown-content">
+                        <a href="/report/selection">ACP Transactions</a>
+                        <a href="/acp/enroll">ACP Enroll</a>
+                        <a href="/acp/verify">ACP Verify</a>
+                    </div>
+                </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <h1>ACP Verification</h1>
+        <!-- ACP Verify Form -->
+        <div class="form-container">
+            <form action="/acp_verify" method="post">
+                <div class="form-group form-group-2">
+                    <div class="input-container">
+                        <label for="first_name">First Name</label>
+                        <input type="text" id="first_name" name="first_name" value="{{ data.get('name', '').split()[0] }}" required>
+                    </div>
+                    <div class="input-container">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" value="{{ data.get('name', '').split()[1] if data.get('name', '') else '' }}" required>
+                    </div>
+                </div>
+                <div class="form-group form-group-4">
+                    <div class="input-container">
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" name="dob" value="{{ data.get('dob', '') }}" required>
+                    </div>
+                    <div class="input-container">
+                        <label for="unit_number">Unit</label>
+                        <input type="text" id="unit_number" name="unit_number" value="{{ data.get('unit_number', '') }}">
+                    </div>
+                    <div class="input-container">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" name="address" value="{{ data.get('address', '') }}" required>
+                    </div>
+                    <div class="input-container">
+                        <label for="ssn_last4">Last 4 of Social</label>
+                        <input type="text" id="ssn_last4" name="ssn_last4" maxlength="4" value="{{ data.get('ssn_last4', '') }}" required>
+                    </div>
+                </div>
+                <div class="form-group form-group-4">
+                    <div class="input-container">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" value="{{ data.get('city', '') }}" required>
+                    </div>
+                    <div class="input-container">
+                        <label for="state">State</label>
+                        <input type="text" id="state" name="state" maxlength="2" value="{{ data.get('state', '') }}" required>
+                    </div>
+                    <div class="input-container">
+                        <label for="zip_code">ZIP</label>
+                        <input type="text" id="zip_code" name="zip_code" maxlength="5" value="{{ data.get('zip_code', '') }}" required>
+                    </div>
+                    <div class="input-container">
+                        <label for="phone_number">Phone Number</label>
+                        <input type="text" id="phone_number" name="phone_number" maxlength="10" value="{{ data.get('phone_number', '') }}" required>
+                    </div>
+                </div>
+                <div class="form-container">
+                    <input class="edit-form-button" type="submit" value="Verify">
+                </div>
+            </form>
+        </div>
+
+        <footer>
+            <div style="display: flex; justify-content: space-between;">
+                <p class="copyright">&copy; {{ year }} ResiBridge</p>
+                <p class="ip">{{ public }} </p>
+                <p class="time">{{ date }} </p>
+            </div>
+          </footer>
+    </main>
+</body>
+
+</html>

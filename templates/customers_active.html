@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<link rel="icon"
+      type="image/ico"
+      href="static/resibridge.ico">
 <html>
 
   <head>
@@ -30,30 +33,28 @@
         <div class="logo">ResiBridge Tech App</div>
         <nav>
           <ul>
-            <li>
-              <a href="/">TechApp</a>
-            </li>
             <li class="dropdown">
               <a href="#" class="dropbtn">Customers</a>
               <div class="dropdown-content">
-                <a href="/customers">Customers</a>
-                <a href="/customers_active">Customers Active</a>
+                  <a href="/add_customer">Add Customers</a>
+                  <a href="/customers">All Customers</a>
+                  <a href="/customers_active">Active Customers</a>
               </div>
-            </li>
+          </li>
+          <li class="dropdown">
+              <a href="#" class="dropbtn">ACP</a>
+              <div class="dropdown-content">
+                  <a href="/report/selection">ACP Transactions</a>
+                  <a href="/acp/enroll">ACP Enroll</a>
+                  <a href="/acp/verify">ACP Verify</a>
+              </div>
+          </li>
           </ul>
         </nav>
       </div>
     </header>
     <main>
       <h1>Active Customers</h1>
-      {% if token_status == 'active' %}
-      <button class="active">Token Active</button>
-      {% else %}
-      <button class="inactive">Token Expired</button>
-      <form action="/refresh" method="post">
-        <input type="submit" value="Refresh Token">
-      </form>
-      {% endif %}
       <div class="table-responsive">
         <table class="table">
           <thead>
@@ -90,7 +91,11 @@
       </div>
     </main>
     <footer>
-      <p>&copy; 2023 ResiBridge</p>
+      <div style="display: flex; justify-content: space-between;">
+          <p class="copyright">&copy; {{ year }} ResiBridge</p>
+          <p class="ip">{{ public }} </p>
+          <p class="time">{{ date }} </p>
+      </div>
     </footer>
     <script>
       function showCustomerAttributes(customerId) {
