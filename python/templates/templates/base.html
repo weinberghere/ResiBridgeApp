@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+
+  <div id="footer">{% block footer %}
+    <div style="display: flex; justify-content: space-between;">
+      <p class="copyright">&copy; {{ year }} ResiBridge</p>
+      <p class="ip">{{ public }} </p>
+      <p class="time">{{ date }} </p>
+    </div>
+    {% endblock %}
+  </div>
+</html>
