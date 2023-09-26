@@ -5,6 +5,8 @@ import requests
 from datetime import datetime
 import public_ip as ip
 from . import auth_bp
+from services.splynx_service import fetch_splynx_data
+from utilities.auth_utils import generate_auth_header
 
 auth_bp = Blueprint('auth', __name__)
 

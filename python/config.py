@@ -1,5 +1,8 @@
 import os
 from datetime import datetime
+from flask_config import *
+from acp_config import *
+from splynx_config import *
 
 # Flask Secret Key
 FLASK_SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
