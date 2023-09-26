@@ -1,7 +1,7 @@
 import functools
 import requests
 from datetime import datetime, timedelta
-from flask import Blueprint, session, request, render_template, redirect, url_for
+from flask import Blueprint, session, request, render_template
 from config import ACP_BASE_URL, ACP_TOKEN_URL, ACP_API_ID, ACP_API_KEY, SAC_CODES, date_format
 import public_ip as ip
 from services.acp_service import fetch_acp_data

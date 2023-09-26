@@ -4,7 +4,7 @@ from flask import send_file, session, request
 import os
 import hmac
 import hashlib
-from main import app
+from flask import current_app as app
 from utilities.csv_utils import exclude_csv_columns
 from utilities.auth_utils import generate_auth_header
 

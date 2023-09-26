@@ -7,6 +7,8 @@ import public_ip as ip
 from . import auth_bp
 from services.splynx_service import fetch_splynx_data
 from utilities.auth_utils import generate_auth_header
+from io import BytesIO
+from flask import send_file, session, request, current_app as app
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -37,3 +39,13 @@ def login():
             return 'Login failed'
     else:
         return render_template('login.html',year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+
+@app.route("/report/download_csv", methods=["GET"])
+def download_csv():
+    csv_content = session.get('original_csv')
+    if not csv_content:
+        return "No CSV available", 400
+    buffer = BytesIO()
+    buffer.write(csv_content.encode('utf-8'))
+    buffer.seek(0)
+    return send_file(buffer, mimetype="text/csv", as_attachment=True, download_name="report.csv")
