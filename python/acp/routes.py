@@ -2,7 +2,8 @@ import functools
 import requests
 from datetime import datetime, timedelta
 from flask import Blueprint, session, request, render_template, redirect, url_for
-from config import ACP_BASE_URL, ACP_TOKEN_URL, ACP_API_ID, ACP_API_KEY, SAC_CODES
+from config import ACP_BASE_URL, ACP_TOKEN_URL, ACP_API_ID, ACP_API_KEY, SAC_CODES, date_format
+import public_ip as ip
 
 acp_bp = Blueprint('acp', __name__)
 
@@ -28,6 +29,53 @@ def fetch_new_token():
         return True
     else:
         return False
+
+@acp_bp.route("/acp/<action>", methods=["GET", "POST"])
+def acp_action(action):
+    if request.method == "GET":
+        customer_data = session.get('new_customer_details', {})
+        return render_template(f'acp_{action}.html', data=customer_data, year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+    elif request.method == "POST":
+        access_token, data = prepare_data(action)
+        endpoint_mapping = {
+            'verify': 'verify',
+            'enroll': 'subscriber',
+            'transfer': 'transfer',
+            'delete': 'delete',
+            'unenroll': 'unenroll',
+            # add other actions here
+        }
+        
+        if action not in endpoint_mapping:
+            return "Invalid action", 400
+        
+        endpoint = ACP_BASE_URL + endpoint_mapping[action]
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.post(endpoint, headers=headers, json=data)
+
+        if response.status_code == 200:
+            response_data = response.json()
+            message = response_data[0]["message"] if isinstance(response_data, list) else "Unexpected response format"
+            return message
+        else:
+            if response.status_code == 401:
+                fetch_new_token()
+                headers["Authorization"] = f"Bearer {session.get('access_token')}"
+                response = requests.post(endpoint, headers=headers, json=data)
+                
+            response_data = response.json()
+            if isinstance(response_data, dict):
+                failure_type = response_data.get("header", {}).get("failureType", "Unknown failure")
+                body_messages = "<br>".join([" ".join(item) for item in response_data.get("body", [])])
+            else:
+                failure_type = "Unknown failure"
+                body_messages = str(response_data)
+
+            return f"*** Failure Type: {failure_type}.***<br><br><br>Details:<br>{body_messages} <br>", 400
 
 def prepare_data(action):
     customer_data = session.get('new_customer_details', {})

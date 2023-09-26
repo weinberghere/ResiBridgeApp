@@ -38,8 +38,7 @@ def download_csv():
     csv_content = session.get('original_csv')
     if not csv_content:
         return "No CSV available", 400
-    # Create a BytesIO buffer and write CSV content to it.
     buffer = BytesIO()
     buffer.write(csv_content.encode('utf-8'))
-    buffer.seek(0)  # Reset file position to the beginning.
+    buffer.seek(0)
     return send_file(buffer, mimetype="text/csv", as_attachment=True, download_name="report.csv")
