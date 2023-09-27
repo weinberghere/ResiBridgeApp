@@ -1,12 +1,18 @@
 import functools
 import requests
 from datetime import datetime, timedelta
-from flask import Blueprint, session, request, render_template
-from config import ACP_BASE_URL, ACP_TOKEN_URL, ACP_API_ID, ACP_API_KEY, SAC_CODES, date_format
+from flask import Blueprint, session, request, render_template, send_file, redirect, url_for
+from io import BytesIO
+from configurations.acp_config import ACP_BASE_URL, ACP_TOKEN_URL, ACP_API_ID, ACP_API_KEY
+from config import SAC_CODES, date_format
 import public_ip as ip
-from services.acp_service import fetch_acp_data
+from dotenv import load_dotenv
+from utils import exclude_csv_columns
+import json
 
 acp_bp = Blueprint('acp', __name__)
+load_dotenv()
+
 
 def requires_token(func):
     @functools.wraps(func)
@@ -18,7 +24,9 @@ def requires_token(func):
             if not fetch_new_token():
                 return "Failed to retrieve ACP token", 500
         return func(*args, **kwargs)
+
     return decorated_function
+
 
 def fetch_new_token():
     headers = {"Content-Type": "application/json"}
@@ -31,11 +39,13 @@ def fetch_new_token():
     else:
         return False
 
+
 @acp_bp.route("/acp/<action>", methods=["GET", "POST"])
 def acp_action(action):
     if request.method == "GET":
         customer_data = session.get('new_customer_details', {})
-        return render_template(f'acp_{action}.html', data=customer_data, year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+        return render_template(f'acp_{action}.html', data=customer_data, year=datetime.now().strftime('%Y'),
+                               date=date_format, public=f"Public IP: {ip.get()}")
     elif request.method == "POST":
         access_token, data = prepare_data(action)
         endpoint_mapping = {
@@ -46,16 +56,16 @@ def acp_action(action):
             'unenroll': 'unenroll',
             # add other actions here
         }
-        
+
         if action not in endpoint_mapping:
             return "Invalid action", 400
-        
+
         endpoint = ACP_BASE_URL + endpoint_mapping[action]
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json"
         }
-        
+
         response = requests.post(endpoint, headers=headers, json=data)
 
         if response.status_code == 200:
@@ -67,7 +77,7 @@ def acp_action(action):
                 fetch_new_token()
                 headers["Authorization"] = f"Bearer {session.get('access_token')}"
                 response = requests.post(endpoint, headers=headers, json=data)
-                
+
             response_data = response.json()
             if isinstance(response_data, dict):
                 failure_type = response_data.get("header", {}).get("failureType", "Unknown failure")
@@ -77,6 +87,69 @@ def acp_action(action):
                 body_messages = str(response_data)
 
             return f"*** Failure Type: {failure_type}.***<br><br><br>Details:<br>{body_messages} <br>", 400
+
+
+@acp_bp.route("/report/selection", methods=["GET", "POST"])
+def select_parameters():
+    if request.method == "POST":
+        sac = request.form.get("sac")
+        month = request.form.get('month')
+        return redirect(url_for('acp.transaction_report', sac=sac, month=month))
+    return render_template('selection_form.html', sac_codes=SAC_CODES, year=datetime.now().strftime('%Y'),
+                           date=date_format, public=f"Public IP: {ip.get()}")
+
+
+@acp_bp.route("/report/transaction", methods=["GET", "POST"])
+def transaction_report():
+    sac = request.form.get('sac')
+    month = request.form.get('month')
+    endpoint = f"{ACP_BASE_URL}report/subscriber?reportType=detail&sac={sac}&includeSubscriberId=0&eligibilityMonth={month}&includeACPCertInd=1"
+
+    # Proactively fetch a new token if it doesn't exist or if it's expired
+    if not session.get("access_token") or datetime.now() >= session.get("token_expiry"):
+        fetch_new_token()
+
+    headers = {
+        "Authorization": f"Bearer {session.get('access_token')}",
+        "Content-Type": "application/json"
+    }
+
+    response = requests.get(endpoint, headers=headers)
+
+    # If unauthorized, fetch new token and try again
+    if response.status_code == 401:
+        fetch_new_token()
+        headers["Authorization"] = f"Bearer {session.get('access_token')}"
+        response = requests.get(endpoint, headers=headers)
+
+    if response.status_code == 200:
+        csv_content = response.text
+        session['original_csv'] = csv_content  # Store the original csv for downloading
+        excluded_columns = ["BQP Last Name", "BQP First Name", "Mailing Street Address", "Eligibility Program",
+                            "Tribal Benefit Flag", "Mailing City", "Mailing State", "Mailing ZIP",
+                            "Mailing Address Validated", "BQP Middle Name", "Device Reimbursement Date", "Device Type",
+                            "Device Make", "Expected Device Reimbursement Rate", "Device Copay",
+                            "Device Delivery Method", "Device Model", "Model Number", "Market Value", "Consumer Fee",
+                            "Consumer Email", "AVP Program Exception", "School Lunch Exception", "School Name",
+                            "AMS Failure Exception", "Latitude", "Longitude", "Duplicate Address Exception",
+                            "Expected Reimbursement Rate", "ACPCertInd", "Middle Name", "ETC General Use",
+                            "Device Claimed", "Device Claimed Date",
+                            "Eligible for Transfer Date"]  # Replace with your column names
+        parsed_csv = exclude_csv_columns(csv_content, excluded_columns)
+
+        return render_template('csv_viewer.html', csv_content=parsed_csv, year=datetime.now().strftime('%Y'),
+                               date=date_format, public=f"Public IP: {ip.get()}")
+    else:
+        try:
+            response_data = response.json()
+            failure_type = "JSON Response"
+            body_messages = str(response_data)
+        except json.JSONDecodeError:
+            failure_type = "Non-JSON Response or Empty Response"
+            body_messages = response.text
+
+        return f"*** Failure Type: {failure_type}.***<br><br><br>Details:<br>{body_messages} <br>", 400
+
 
 def prepare_data(action):
     customer_data = session.get('new_customer_details', {})
@@ -159,3 +232,14 @@ def prepare_data(action):
         data = None
         access_token = None
     return data, access_token
+
+
+@acp_bp.route("/report/download_csv", methods=["GET"])
+def download_csv():
+    csv_content = session.get('original_csv')
+    if not csv_content:
+        return "No CSV available", 400
+    buffer = BytesIO()
+    buffer.write(csv_content.encode('utf-8'))
+    buffer.seek(0)
+    return send_file(buffer, mimetype="text/csv", as_attachment=True, download_name="report.csv")

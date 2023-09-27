@@ -1,5 +1,6 @@
 import requests
-from config import SPLYNX_BASE_URL, SPLYNX_KEY
+from configurations.splynx_config import SPLYNX_BASE_URL, SPLYNX_KEY
+
 
 def fetch_splynx_data(endpoint):
     """
@@ -10,7 +11,7 @@ def fetch_splynx_data(endpoint):
         "Content-Type": "application/json"
     }
     response = requests.get(f"{SPLYNX_BASE_URL}/{endpoint}", headers=headers)
-    
+
     if response.status_code == 200:
         return response.json()
     else:

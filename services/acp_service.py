@@ -1,5 +1,5 @@
 import requests
-from config import ACP_BASE_URL, ACP_API_KEY
+from configurations.acp_config import ACP_BASE_URL, ACP_API_KEY
 
 def fetch_acp_data(action):
     """

@@ -1,5 +1,4 @@
 import requests
-import base64
 import os
 import json
 import hmac
@@ -11,7 +10,6 @@ import csv
 from io import BytesIO, StringIO
 import logging
 import functools
-from pytz import timezone
 import public_ip as ip
 
 app = Flask(__name__)
@@ -32,7 +30,7 @@ if 4 <= day <= 20 or 24 <= day <= 30:
     suffix = "th"
 else:
     suffix = ["st", "nd", "rd"][day % 10 - 1]
-date_format=datetime.now().strftime('%A %B') + " " +days+suffix
+date_format = datetime.now().strftime('%A %B') + " " + days + suffix
 
 #########################################
 #########################################
@@ -50,6 +48,7 @@ splynx_customer_url = f"{splynx_base_url}/admin/customers/customer"
 splynx_payment_url = f"{splynx_base_url}/admin/customers/customer-payment-accounts"
 splynx_token_url = f"{splynx_base_url}/admin/auth/tokens"
 
+
 # Defining Splynx Header
 def generate_auth_header():
     splynx_api_key = os.getenv("SPLYNX_KEY")
@@ -64,9 +63,12 @@ def generate_auth_header():
     auth_header = f'Splynx-EA (key={splynx_api_key}&nonce={nonce}&signature={hash_signature})'
     return auth_header
 
+
 @app.route('/')
 def home():
-    return render_template('login.html', year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+    return render_template('login.html', year=datetime.now().strftime('%Y'), date=date_format,
+                           public=f"Public IP: {ip.get()}")
+
 
 # Login page
 @app.route('/login', methods=['POST'])
@@ -79,7 +81,7 @@ def login():
     # Make API call to get the token
     if request.method == 'POST':
         print("Received POST request to login")
-        response = requests.post(splynx_token_url, headers={'Authorization':auth_header}, json={
+        response = requests.post(splynx_token_url, headers={'Authorization': auth_header}, json={
             'auth_type': 'admin',
             'login': username,
             'password': password
@@ -95,15 +97,19 @@ def login():
         else:
             return 'Login failed'
     else:
-        return render_template('login.html',year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+        return render_template('login.html', year=datetime.now().strftime('%Y'), date=date_format,
+                               public=f"Public IP: {ip.get()}")
+
 
 # Customers page
 @app.route('/customers')
 def customers():
     auth_header = generate_auth_header()
-    response = requests.get(splynx_customer_url, headers={'Authorization':auth_header})
+    response = requests.get(splynx_customer_url, headers={'Authorization': auth_header})
     customers = response.json()
-    return render_template('customers.html', customers=customers, token_status='active', year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+    return render_template('customers.html', customers=customers, token_status='active',
+                           year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+
 
 # Customers Active page
 @app.route('/customers_active')
@@ -111,10 +117,12 @@ def customers_active():
     auth_header = generate_auth_header()
 
     # Call the check_token_status() function before making the API request
-    response = requests.get(splynx_customer_url, headers={'Authorization':auth_header})
+    response = requests.get(splynx_customer_url, headers={'Authorization': auth_header})
     customers = response.json()
     active_customers = [customer for customer in customers if customer['status'] == 'active']
-    return render_template('customers_active.html', customers=active_customers, token_status='active', year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+    return render_template('customers_active.html', customers=active_customers, token_status='active',
+                           year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+
 
 # Add customer
 
@@ -167,7 +175,7 @@ def add_customer():
             'dob': dob
         }
 
-        response = requests.post(splynx_customer_url, json=new_customer, headers={'Authorization':auth_header})
+        response = requests.post(splynx_customer_url, json=new_customer, headers={'Authorization': auth_header})
 
         # Print the response status code and full response content
         print(f"Response Status Code: {response.status_code}")
@@ -186,7 +194,9 @@ def add_customer():
             print("Response Content:", response.content)
             return "Error: Failed to add customer, status code " + str(response.status_code)
     else:
-        return render_template('home.html', year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+        return render_template('home.html', year=datetime.now().strftime('%Y'), date=date_format,
+                               public=f"Public IP: {ip.get()}")
+
 
 # Edit customer
 @app.route('/edit_customer', methods=['POST'])
@@ -220,6 +230,7 @@ def edit_customer():
     else:
         return "Error: Failed to edit customer"
 
+
 # Delete customer
 @app.route('/delete_customer/<int:customer_id>', methods=['POST'])
 def delete_customer(customer_id):
@@ -231,6 +242,7 @@ def delete_customer(customer_id):
     else:
         return "Error: Failed to delete customer"
 
+
 # Customer banking information
 @app.route('/banking', methods=['POST', 'GET'])
 def banking():
@@ -239,7 +251,7 @@ def banking():
     customer_id = session.get('customer_id')
     # Print the customer_id to debug
     print(f"Customer ID in banking route: {customer_id}")
-    
+
     if request.method == 'POST':
         cardNumber = request.form['field_1']
         cardholderName = request.form['field_2']
@@ -271,7 +283,9 @@ def banking():
         else:
             return "Error: Failed to add banking information"
     else:
-        return render_template('banking.html', year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+        return render_template('banking.html', year=datetime.now().strftime('%Y'), date=date_format,
+                               public=f"Public IP: {ip.get()}")
+
 
 # ACP related routes
 
@@ -281,28 +295,32 @@ def requires_token(func):
         # Check if there's an existing token and it's still valid
         token = session.get('acp_access_token')
         token_expiry = session.get('acp_token_expiry', datetime.now() - timedelta(hours=1))
-        
+
         if not token or datetime.now() >= token_expiry:
             if not fetch_new_token():
                 return "Failed to retrieve ACP token", 500
-        
+
         return func(*args, **kwargs)
+
     return decorated_function
+
 
 def fetch_new_token():
     headers = {"Content-Type": "application/json"}
     response = requests.post(acp_token_url, headers=headers, auth=(api_id, api_key))
-    
+
     if response.status_code == 200:
         response_data = response.json()
         session["access_token"] = response_data["access_token"]
         session["token_expiry"] = (datetime.now() + timedelta(hours=1)).timestamp()
 
+
 @app.route("/acp/<action>", methods=["GET", "POST"])
 def acp_action(action):
     if request.method == "GET":
         customer_data = session.get('new_customer_details', {})
-        return render_template(f'acp_{action}.html', data=customer_data, year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+        return render_template(f'acp_{action}.html', data=customer_data, year=datetime.now().strftime('%Y'),
+                               date=date_format, public=f"Public IP: {ip.get()}")
     elif request.method == "POST":
         access_token, data = prepare_data(action)
         endpoint_mapping = {
@@ -313,16 +331,16 @@ def acp_action(action):
             'unenroll': 'unenroll',
             # add other actions here
         }
-        
+
         if action not in endpoint_mapping:
             return "Invalid action", 400
-        
+
         endpoint = acp_base_url + endpoint_mapping[action]
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json"
         }
-        
+
         response = requests.post(endpoint, headers=headers, json=data)
 
         if response.status_code == 200:
@@ -334,7 +352,7 @@ def acp_action(action):
                 fetch_new_token()
                 headers["Authorization"] = f"Bearer {session.get('access_token')}"
                 response = requests.post(endpoint, headers=headers, json=data)
-                
+
             response_data = response.json()
             if isinstance(response_data, dict):
                 failure_type = response_data.get("header", {}).get("failureType", "Unknown failure")
@@ -345,7 +363,7 @@ def acp_action(action):
 
             return f"*** Failure Type: {failure_type}.***<br><br><br>Details:<br>{body_messages} <br>", 400
 
-        
+
 def prepare_data(action):
     if not session.get("access_token") or datetime.now().timestamp() >= session.get("token_expiry", 0):
         fetch_new_token()
@@ -376,7 +394,7 @@ def prepare_data(action):
     if action == 'verify':
         if 'new_customer_details' in session:
             customer_details = session.get('new_customer_details')
-            
+
             # Extract details from session
             first_name = customer_details['name'].split()[0]
             last_name = customer_details['name'].split()[-1]
@@ -419,7 +437,6 @@ def prepare_data(action):
         "bqpTribalId": "",
         "amsFailureException": "",
         "bqpDob": "",
-        "repNotAssisted": "",
         "mailingAddress2": "",
         "mailingAddress1": "",
         "mailingZipCode": "",
@@ -447,8 +464,9 @@ def prepare_data(action):
         "consumerEmail": "",
         "acpCertInd": "1"
     }
-    
+
     return access_token, data
+
 
 @app.route("/report/selection", methods=["GET", "POST"])
 def select_parameters():
@@ -456,7 +474,9 @@ def select_parameters():
         sac = request.form.get("sac")
         month = request.form.get('month')
         return redirect(url_for('transaction_report', sac=sac, month=month))
-    return render_template('selection_form.html', sac_codes=SAC_CODES, year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+    return render_template('selection_form.html', sac_codes=SAC_CODES, year=datetime.now().strftime('%Y'),
+                           date=date_format, public=f"Public IP: {ip.get()}")
+
 
 @app.route("/report/transaction", methods=["GET", "POST"])
 def transaction_report():
@@ -484,10 +504,20 @@ def transaction_report():
     if response.status_code == 200:
         csv_content = response.text
         session['original_csv'] = csv_content  # Store the original csv for downloading
-        excluded_columns = ["BQP Last Name","BQP First Name","Mailing Street Address","Eligibility Program","Tribal Benefit Flag","Mailing City","Mailing State","Mailing ZIP","Mailing Address Validated","BQP Middle Name","Device Reimbursement Date","Device Type","Device Make","Expected Device Reimbursement Rate","Device Copay","Device Delivery Method","Device Model","Model Number","Market Value","Consumer Fee","Consumer Email","AVP Program Exception","School Lunch Exception","School Name","AMS Failure Exception","Latitude","Longitude","Duplicate Address Exception","Expected Reimbursement Rate","ACPCertInd","Middle Name","ETC General Use","Device Claimed","Device Claimed Date","Eligible for Transfer Date"]  # Replace with your column names
+        excluded_columns = ["BQP Last Name", "BQP First Name", "Mailing Street Address", "Eligibility Program",
+                            "Tribal Benefit Flag", "Mailing City", "Mailing State", "Mailing ZIP",
+                            "Mailing Address Validated", "BQP Middle Name", "Device Reimbursement Date", "Device Type",
+                            "Device Make", "Expected Device Reimbursement Rate", "Device Copay",
+                            "Device Delivery Method", "Device Model", "Model Number", "Market Value", "Consumer Fee",
+                            "Consumer Email", "AVP Program Exception", "School Lunch Exception", "School Name",
+                            "AMS Failure Exception", "Latitude", "Longitude", "Duplicate Address Exception",
+                            "Expected Reimbursement Rate", "ACPCertInd", "Middle Name", "ETC General Use",
+                            "Device Claimed", "Device Claimed Date",
+                            "Eligible for Transfer Date"]  # Replace with your column names
         parsed_csv = exclude_csv_columns(csv_content, excluded_columns)
 
-        return render_template('csv_viewer.html', csv_content=parsed_csv, year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+        return render_template('csv_viewer.html', csv_content=parsed_csv, year=datetime.now().strftime('%Y'),
+                               date=date_format, public=f"Public IP: {ip.get()}")
     else:
         try:
             response_data = response.json()
@@ -498,6 +528,7 @@ def transaction_report():
             body_messages = response.text
 
         return f"*** Failure Type: {failure_type}.***<br><br><br>Details:<br>{body_messages} <br>", 400
+
 
 def exclude_csv_columns(csv_content, excluded_columns):
     input_csv = StringIO(csv_content)
@@ -515,6 +546,7 @@ def exclude_csv_columns(csv_content, excluded_columns):
 
     return output_csv.getvalue()
 
+
 @app.route("/report/download_csv", methods=["GET"])
 def download_csv():
     csv_content = session.get('original_csv')
@@ -528,7 +560,8 @@ def download_csv():
 
     return send_file(buffer, mimetype="text/csv", as_attachment=True, download_name="report.csv")
 
+
 if __name__ == "__main__":
     debug_mode = os.getenv("FLASK_DEBUG_MODE", "False").lower() == "true"
-    #app.run(port=80, debug=debug_mode)
+    # app.run(port=80, debug=debug_mode)
     app.run(port=80, debug=True)

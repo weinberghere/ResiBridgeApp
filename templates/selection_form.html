@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <link rel="icon"
       type="image/ico"
-      href="static/resibridge.ico">
+      href="{{ url_for('static', filename='resibridge.ico') }}">
 <html lang="en">
     <head>
         <!-- Add Inputmask library -->
@@ -58,7 +58,7 @@
         </header>
         <main>
             <h1>ACP Transaction Report</h1>
-            <form action="{{ url_for('transaction_report') }}" method="post">
+            <form action="{{ url_for('acp.transaction_report') }}" method="post">
                 <div class="form-group form-group-2">
                   <div class="input-container">
                     <label for="sac">Select SAC:</label>
@@ -77,7 +77,7 @@
                     </select>
                   </div>
                 </div>
-                <input class="edit-form-button" type="submit" value="Retreive">
+                <input class="edit-form-button" type="submit" value="Retrieve">
               </form>
         </main>
         <footer>

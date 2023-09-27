@@ -4,9 +4,7 @@ from flask import send_file, session, request
 import os
 import hmac
 import hashlib
-from flask import current_app as app
-from utilities.csv_utils import exclude_csv_columns
-from utilities.auth_utils import generate_auth_header
+
 
 # Defining Splynx Header
 def generate_auth_header():
@@ -22,6 +20,7 @@ def generate_auth_header():
     auth_header = f'Splynx-EA (key={splynx_api_key}&nonce={nonce}&signature={hash_signature})'
     return auth_header
 
+
 def exclude_csv_columns(csv_content, excluded_columns):
     input_csv = StringIO(csv_content)
     output_csv = StringIO()
@@ -34,13 +33,3 @@ def exclude_csv_columns(csv_content, excluded_columns):
         filtered_row = {key: row[key] for key in row if key not in excluded_columns}
         writer.writerow(filtered_row)
     return output_csv.getvalue()
-
-@app.route("/report/download_csv", methods=["GET"])
-def download_csv():
-    csv_content = session.get('original_csv')
-    if not csv_content:
-        return "No CSV available", 400
-    buffer = BytesIO()
-    buffer.write(csv_content.encode('utf-8'))
-    buffer.seek(0)
-    return send_file(buffer, mimetype="text/csv", as_attachment=True, download_name="report.csv")
