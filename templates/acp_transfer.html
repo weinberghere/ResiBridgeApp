@@ -4,45 +4,45 @@
       href="static/resibridge.ico">
 <html>
 
-    <head>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <title>ResiBridge Tech App</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>ResiBridge Tech App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
 
-    <body>
-        <header>
-            <div class="container">
-                <div class="logo">ResiBridge Tech App</div>
-                <nav>
-                    <ul>
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn">Customers</a>
-                        <div class="dropdown-content">
-                            <a href="/add_customer">Add Customers</a>
-                            <a href="/customers">All Customers</a>
-                            <a href="/customers_active">Active Customers</a>
-                        </div>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn">ACP</a>
-                        <div class="dropdown-content">
-                            <a href="/report/selection">ACP Transactions</a>
-                            <a href="/acp/enroll">ACP Enroll</a>
-                            <a href="/acp/verify">ACP Verify</a>
-                            <a href="/acp/transfer">ACP Transfer</a>
-                        </div>
-                    </li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
-        <main>
-            <h1>ACP Enrollment</h1>
-        <!-- ACP Enrollment Form -->
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">ResiBridge Tech App</div>
+            <nav>
+                <ul>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">Customers</a>
+                    <div class="dropdown-content">
+                        <a href="/add_customer">Add Customers</a>
+                        <a href="/customers">All Customers</a>
+                        <a href="/customers_active">Active Customers</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">ACP</a>
+                    <div class="dropdown-content">
+                        <a href="/report/selection">ACP Transactions</a>
+                        <a href="/acp/enroll">ACP Enroll</a>
+                        <a href="/acp/verify">ACP Verify</a>
+                        <a href="/acp/transfer">ACP Transfer</a>
+                    </div>
+                </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <h1>ACP Transfer</h1>
+        <!-- ACP Transfer Form -->
         <div class="form-container">
-            <form action="/acp_enroll" method="post">
+            <form action="/acp_transfer" method="post">
                 <div class="form-group form-group-2">
                     <div class="input-container">
                         <label for="first_name">First Name</label>
@@ -90,7 +90,7 @@
                     </div>
                 </div>
                 <div class="form-container">
-                    <input class="edit-form-button" type="submit" value="Enroll">
+                    <input class="edit-form-button" type="submit" value="Transfer">
                 </div>
             </form>
         </div>

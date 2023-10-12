@@ -38,11 +38,9 @@ def banking():
             'field_8': accountName,
             'field_9': accountType,
         }, headers={'Authorization': auth_header})
-
         print("----API Response:----")
         print("Status Code:", response.status_code)
         print("Response Content:", response.content)
-
         if response.status_code == 202:
             return redirect(url_for('acp_action', action='verify'))
         else:

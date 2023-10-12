@@ -79,6 +79,7 @@ def add_customer():
         print(f"Response Content: {response.content}")
 
         if response.status_code == 201:
+            session['new_customer_details'] = new_customer
             session['customer_id'] = response.json().get('id')
             customer_id = session.get('customer_id')
             if customer_id is not None:

@@ -308,12 +308,10 @@ def requires_token(func):
 def fetch_new_token():
     headers = {"Content-Type": "application/json"}
     response = requests.post(acp_token_url, headers=headers, auth=(api_id, api_key))
-
     if response.status_code == 200:
         response_data = response.json()
         session["access_token"] = response_data["access_token"]
         session["token_expiry"] = (datetime.now() + timedelta(hours=1)).timestamp()
-
 
 @app.route("/acp/<action>", methods=["GET", "POST"])
 def acp_action(action):

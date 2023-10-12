@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect
+from flask import request, Blueprint, render_template, redirect, session
 from utils import generate_auth_header
 from config import date_format
 from configurations.splynx_config import SPLYNX_TOKEN_URL
@@ -6,7 +6,6 @@ import requests
 from datetime import datetime
 import public_ip as ip
 from utilities.auth_utils import generate_auth_header
-from flask import request, Blueprint, render_template
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -17,7 +16,8 @@ print("Defining auth routes")
 @auth_bp.route('/')
 def home():
     logging.debug("Inside the home route")
-    return render_template('/login.html', year=datetime.now().strftime('%Y'), date=date_format, public=f"Public IP: {ip.get()}")
+    client_ip = session.get('client_ip', 'IP not set')
+    return render_template('/login.html', year=datetime.now().strftime('%Y'), date=date_format, cx=f"Public IP: {client_ip}")
 
 
 @auth_bp.route('/login', methods=['POST'])
@@ -26,6 +26,8 @@ def login():
     print("Inside login route")
     username = request.form['username']
     password = request.form['password']
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    session['client_ip'] = client_ip
 
     # Make API call to get the token
     if request.method == 'POST':
@@ -47,4 +49,4 @@ def login():
             return 'Login failed'
     else:
         return render_template('login.html', year=datetime.now().strftime('%Y'), date=date_format,
-                               public=f"Public IP: {ip.get()}")
+                               cx=f"Public IP: {client_ip}")

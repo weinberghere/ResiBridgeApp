@@ -1,12 +1,53 @@
 <!DOCTYPE html>
 <html>
 
-  <div id="footer">{% block footer %}
-    <div style="display: flex; justify-content: space-between;">
-      <p class="copyright">&copy; {{ year }} ResiBridge</p>
-      <p class="ip">{{ public }} </p>
-      <p class="time">{{ date }} </p>
-    </div>
-    {% endblock %}
-  </div>
+<head>
+    <link rel="icon" type="image/ico" href="{{ url_for('static', filename='resibridge.ico') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>ResiBridge Tech App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">ResiBridge Tech App</div>
+            <nav>
+                <ul>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">Customers</a>
+                        <div class="dropdown-content">
+                            <a href="/add_customer">Add Customers</a>
+                            <a href="/customers">All Customers</a>
+                            <a href="/customers_active">Active Customers</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">ACP</a>
+                        <div class="dropdown-content">
+                            <a href="/report/selection">ACP Transactions</a>
+                            <a href="/acp/enroll">ACP Enroll</a>
+                            <a href="/acp/verify">ACP Verify</a>
+                            <a href="/acp/transfer">ACP Transfer</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        {% block content %}
+        <!-- Content will be inserted here from child templates -->
+        {% endblock %}
+    </main>
+    <footer>
+        <div style="display: flex; justify-content: space-between;">
+            <p class="copyright">&copy; {{ year }} ResiBridge</p>
+            <p class="ip">{{ cx }}</p>
+            <p class="time">{{ date }}</p>
+        </div>
+    </footer>
+</body>
+
 </html>

@@ -1,91 +1,32 @@
-<!DOCTYPE html>
-<link rel="icon"
-      type="image/ico"
-      href="{{ url_for('static', filename='resibridge.ico') }}">
-<html lang="en">
-    <head>
-        <!-- Add Inputmask library -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> <!-- Include jQuery -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.6/jquery.inputmask.min.js"></script>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Transaction Report</title>
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
-        <style>
-        /* Dropdown menu styles */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
+{% extends "base.html" %}
 
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            z-index: 1;
-        }
+{% block title %}
+ACP Transaction Report
+{% endblock %}
 
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        </style>
-    </head>
-    <body>
-        <header>
-            <div class="container">
-            <div class="logo">ResiBridge Tech App</div>
-            <nav>
-                <ul>
-                <li class="dropdown">
-                    <a href="#" class="dropbtn">Customers</a>
-                    <div class="dropdown-content">
-                        <a href="/add_customer">Add Customers</a>
-                        <a href="/customers">All Customers</a>
-                        <a href="/customers_active">Active Customers</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a href="#" class="dropbtn">ACP</a>
-                    <div class="dropdown-content">
-                        <a href="/report/selection">ACP Transactions</a>
-                        <a href="/acp/enroll">ACP Enroll</a>
-                        <a href="/acp/verify">ACP Verify</a>
-                    </div>
-                </li>
-                </ul>
-            </nav>
-            </div>
-        </header>
-        <main>
-            <h1>ACP Transaction Report</h1>
-            <form action="{{ url_for('acp.transaction_report') }}" method="post">
-                <div class="form-group form-group-2">
-                  <div class="input-container">
+{% block content %}
+    <h1>ACP Transaction Report</h1>
+    <div class="form-container">
+        <form action="{{ url_for('acp.transaction_report') }}" method="post">
+            <div class="form-group form-group-2">
+                <div class="input-container">
                     <label for="sac">Select SAC:</label>
                     <select name="sac">
                         {% for state, sac_code in sac_codes.items() %}
                             <option value="{{ sac_code }}">{{ state }} - {{ sac_code }}</option>
                         {% endfor %}
                     </select>
-                  </div>
-                  <div class="input-container">
+                </div>
+                <div class="input-container">
                     <label for="month">Select Month:</label>
                     <select name="month" id="month">
                         {% for num in range(1, 13) %}
                             <option value="{{ '{:02}'.format(num) }}">{{ '{:02}'.format(num) }}</option>
                         {% endfor %}
                     </select>
-                  </div>
                 </div>
-                <input class="edit-form-button" type="submit" value="Retrieve">
-              </form>
-        </main>
-        <footer>
-            <div style="display: flex; justify-content: space-between;">
-                <p class="copyright">&copy; {{ year }} ResiBridge</p>
-                <p class="ip">{{ public }} </p>
-                <p class="time">{{ date }} </p>
             </div>
-        </footer>
-    </body>
-</html>
+                <input class="edit-form-button" type="submit" value="Retrieve">
+        </form>
+    </div>
+{% endblock %}
